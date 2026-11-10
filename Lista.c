@@ -7,7 +7,7 @@ struct Arvore{
     int id,frequencia;
     struct Arvore *esq;
     struct Arvore *dir;
-};typedef struct Arvore arvore;
+};typedef struct Arvore Arvore;
 
 struct Tabela{
     int id,frequencia;
@@ -16,28 +16,40 @@ struct Tabela{
 };typedef struct Tabela tabela;
 
 struct ListaOrdenada{
-    arvore *no;
+    Arvore *arvore;
     struct ListaOrdenada *prox;
 };typedef struct ListaOrdenada lista;
 
-void insere (lista **cabeca,arvore *no){
+lista* criaNo(Arvore* arvore){
     lista *nova = (lista*)malloc(sizeof(lista));
-    nova->no = no;
+    nova->arvore = arvore;
     nova->prox = NULL;
-    if(*cabeca == NULL){
+    return nova;
+}
+
+void insereLista(lista **cabeca, Arvore *arv){
+    lista *nova = criaNo(arv);
+    lista *l;
+
+    if (*cabeca == NULL || arv->frequencia < (*cabeca)->arvore->frequencia) {
+        nova->prox = *cabeca;
         *cabeca = nova;
     }
-    else{
-        lista *l = *cabeca;
-        if(no->frequencia < l->no->frequencia){
-            nova->prox = *cabeca;
-            *cabeca = nova;
-        }
-        while(l !=NULL && no->frequencia > l->no->frequencia)
-        {
+    else {
+        l = *cabeca;
+        while (l->prox != NULL && l->prox->arvore->frequencia <= arv->frequencia) {
             l = l->prox;
         }
         nova->prox = l->prox;
         l->prox = nova;
     }
 }
+
+Arvore* removeLista(lista **cabeca){
+    Arvore *auxArvore = (*cabeca)->arvore;
+    lista *auxLista = *cabeca;
+    *cabeca = (*cabeca)->prox;
+    free(auxLista);
+    return auxArvore;
+}
+
