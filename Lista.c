@@ -27,6 +27,15 @@ lista* criaNo(Arvore* arvore){
     return nova;
 }
 
+Arvore* criaArvore(int id, int freq){
+    Arvore *nova = (Arvore*)malloc(sizeof(Arvore));
+    nova->id = id;
+    nova->frequencia = freq;
+    nova->dir = NULL;
+    nova->esq = NULL;
+    return nova;
+}
+
 void insereLista(lista **cabeca, Arvore *arv){
     lista *nova = criaNo(arv);
     lista *l;
@@ -42,6 +51,15 @@ void insereLista(lista **cabeca, Arvore *arv){
         }
         nova->prox = l->prox;
         l->prox = nova;
+    }
+}
+
+void criaLista(lista **cabeca, tabela *tab){
+    while(tab != NULL){
+        Arvore *arv;
+        arv = criaArvore(tab->id,tab->frequencia);
+        insereLista(&(*cabeca),arv);
+        tab = tab->prox;
     }
 }
 
