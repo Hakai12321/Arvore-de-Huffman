@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<ctype.h>
 
-#define TF 50 
+#define TF 100 
 
 struct Arvore{
     int id,frequencia;
