@@ -14,6 +14,10 @@ struct Tabela{
     char palavra[TF],huffman[TF];
     struct Tabela *prox;
 };typedef struct Tabela tabela;
+struct Registro{
+    int id;
+    char palavra[TF],huffman[TF];
+};typedef struct Registro Registro;
 
 struct ListaOrdenada{
     Arvore *arvore;
@@ -54,12 +58,27 @@ void insereLista(lista **cabeca, Arvore *arv){
     }
 }
 
-void criaLista(lista **cabeca, tabela *tab){
+void criaListaTabela(lista **cabeca, tabela *tab){
     while(tab != NULL){
         Arvore *arv;
         arv = criaArvore(tab->id,tab->frequencia);
         insereLista(&(*cabeca),arv);
         tab = tab->prox;
+    }
+}
+
+
+//ta errado
+void criaListaArquivo(lista **cabeca, FILE *arq){
+    Registro reg;
+    Arvore *arv;
+    while(!feof(arq)){
+        fread(&reg,sizeof(Registro),1,arq);
+        arv = (Arvore*)malloc(sizeof(Arvore));
+        arv->id = reg.id;
+        arv->dir = NULL;
+        arv->esq = NULL;
+        insereLista(&(*cabeca),arv);
     }
 }
 
