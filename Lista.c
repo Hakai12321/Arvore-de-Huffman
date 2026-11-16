@@ -90,3 +90,6 @@ Arvore* removeLista(lista **cabeca){
     return auxArvore;
 }
 
+char* buscaPalavra(char palavra[TF],tabela *tab){
+
+}

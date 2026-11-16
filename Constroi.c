@@ -4,6 +4,22 @@
 #include <stdlib.h>
 #include "Lista.c"
 
+struct bits{
+    unsigned char b7:1;
+    unsigned char b6:1;
+    unsigned char b5:1;
+    unsigned char b4:1;
+    unsigned char b3:1;
+    unsigned char b2:1;
+    unsigned char b1:1;
+    unsigned char b0:1;
+
+};typedef bits bits;
+union byte{
+    bits b;
+    unsigned char num;
+};typedef byte byte;
+
 void codigoHuffman(Arvore *raiz,tabela  *cabeca,char *cod);
 tabela* getCabecaById(tabela *tab,int id);
 void exibeTabela(tabela *tab);
@@ -15,8 +31,10 @@ int main(){
     tabela *tab=NULL;
     Arvore *arv1,*arv2,*nova,*raiz;
     char cod[TF] = "";
-    criaListaTabela(&cabeca,tab);
 
+
+    //CRIA ARVORE
+    criaListaTabela(&cabeca,tab);
     while(cabeca->prox!= NULL){
         arv1 = removeLista(&cabeca);
         arv2 = removeLista(&cabeca);
@@ -27,11 +45,26 @@ int main(){
     }
     raiz = cabeca->arvore;
 
+    //GRAVA TABELA
     FILE *arq = fopen("registro.dat","wb");
     grava(arq,tab);
     fclose(arq);
+
+
+    //EXIBE TABELA E ARVORE
     codigoHuffman(raiz,tab,cod);
     exibeTabela(tab);
+
+    
+    //CODIFICA FRASE NOVA
+    arq = fopen("frase.dat","rb");
+    FILE *arq2 = fopen("codigo.dat","wb");
+    Registro reg;
+    fread(&reg,sizeof(reg),1,arq);
+    while(!feof(arq)){
+        
+    }
+
 }
 void codigoHuffman(Arvore *raiz,tabela *tab,char *cod){
     if(raiz!= NULL){
