@@ -24,6 +24,26 @@ struct ListaOrdenada{
     struct ListaOrdenada *prox;
 };typedef struct ListaOrdenada lista;
 
+
+// criacao de nos
+lista* criaNo(Arvore *arvore);
+Arvore* criaArvore(int id, int freq);
+
+// manipulacao da lista ordenada
+void insereLista(lista **cabeca, Arvore *arv);
+void criaListaTabela(lista **cabeca, tabela *tab);
+Arvore* removeLista(lista **cabeca);
+
+// consturcao da arvore
+void insereFinal(Arvore **raiz, int id);
+void insereEsq(Arvore **raiz);
+void insereDir(Arvore **raiz);
+void criaArvoreArquivo(lista **cabeca, FILE *arq);
+
+// leitura e busca
+void lerPalavra(FILE *arq, char retorno[TF]);
+char* buscaPalavra(char palavra[TF], tabela *tab);
+
 lista* criaNo(Arvore* arvore){
     lista *nova = (lista*)malloc(sizeof(lista));
     nova->arvore = arvore;
@@ -68,10 +88,35 @@ void criaListaTabela(lista **cabeca, tabela *tab){
 }
 
 
-//ta errado
+void insereFinal(Arvore **raiz,int id);
+{
+
+}
+void insereEsq(Arvore **raiz);
+{
+    
+}
+void insereDir(Arvore **raiz);
+{
+    
+}
+
+//Corrigir
 void criaArvoreArquivo(lista **cabeca, FILE *arq){
-    
-    
+    Registro reg;
+    Arvore *raiz,*aux;
+    int i;
+    while(!feof(arq)){
+        fread(&reg,sizeof(Registro),1,arq);
+        aux = raiz;
+        for(i=0;i<strlen(reg.huffman);i++){
+            if(reg.huffman[i]==0)
+                insereEsq(&aux);
+            else    
+                insereDir(&aux);
+        }
+        aux->id = reg.id;
+    }
 }
 
 Arvore* removeLista(lista **cabeca){
