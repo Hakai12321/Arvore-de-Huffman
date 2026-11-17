@@ -57,12 +57,32 @@ int main(){
 
     
     //CODIFICA FRASE NOVA
-    arq = fopen("frase.dat","rb");
+    arq = fopen("frase.txt","r");
     FILE *arq2 = fopen("codigo.dat","wb");
-    Registro reg;
-    fread(&reg,sizeof(reg),1,arq);
-    while(!feof(arq)){
-        
+    bits b;
+    char palavra[TF],huff[TF];
+    while(!feof(arq))
+    {
+        palavra[0] = '\0';
+        lerPalavra(arq,palavra);
+        if(palavra[0] != '\0')
+        {
+            strcpy(huff,buscaPalavra(palavra,tab));
+            if(huff == "")
+                printf("palavra nao existe!");
+            else    
+            {
+                //errado
+                b.b0 = huff[0];
+                b.b1 = huff[1];
+                b.b2 = huff[2];
+                b.b3 = huff[3];
+                b.b4 = huff[4];
+                b.b5 = huff[5];
+                b.b6 = huff[6];
+                b.b7 = huff[7];
+            }
+        }
     }
 
 }

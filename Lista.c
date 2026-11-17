@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<ctype.h>
-
+#include<string.h>
 #define TF 100 
 
 struct Arvore{
@@ -90,6 +90,38 @@ Arvore* removeLista(lista **cabeca){
     return auxArvore;
 }
 
-char* buscaPalavra(char palavra[TF],tabela *tab){
 
+void lerPalavra(FILE *arq,char retorno[TF]) {
+    char palavra[TF];
+    int c, i = 0;
+
+    c = tolower(fgetc(arq));
+
+    while (c != EOF &&  c != 32 && (c < 'a' || c > 'z'))
+        c = fgetc(arq);
+    
+    if(c==32)
+        strcpy(retorno," ");
+    else{
+        while (!feof(arq) && c >= 'a' && c <= 'z') 
+        {
+            palavra[i++] = c;
+            c = tolower(fgetc(arq));
+        }
+        palavra[i] = '\0';
+        if(palavra[0]!='\0')
+            strcpy(retorno,palavra);
+    }
 }
+
+char* buscaPalavra(char palavra[TF], tabela *tab){
+    while (tab != NULL && strcmp(palavra, tab->palavra) != 0)
+        tab = tab->prox;
+
+    if (tab == NULL)
+        return "";
+    return tab->huffman;
+}
+
+
+
