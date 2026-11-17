@@ -69,17 +69,9 @@ void criaListaTabela(lista **cabeca, tabela *tab){
 
 
 //ta errado
-void criaListaArquivo(lista **cabeca, FILE *arq){
-    Registro reg;
-    Arvore *arv;
-    while(!feof(arq)){
-        fread(&reg,sizeof(Registro),1,arq);
-        arv = (Arvore*)malloc(sizeof(Arvore));
-        arv->id = reg.id;
-        arv->dir = NULL;
-        arv->esq = NULL;
-        insereLista(&(*cabeca),arv);
-    }
+void criaArvoreArquivo(lista **cabeca, FILE *arq){
+    
+    
 }
 
 Arvore* removeLista(lista **cabeca){
