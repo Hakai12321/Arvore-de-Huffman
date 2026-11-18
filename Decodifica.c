@@ -6,11 +6,12 @@
 
 int main(){
     FILE *arq = fopen("registro.dat","rb");
-    lista *cabeca=NULL;
+    FILE *arqCod = fopen("codigo.dat","rb");
+
     tabela *tab=NULL;
     Arvore *arv1,*arv2,*nova,*raiz;
-    char cod[TF] = "";
-    criaArvoreArquivo(&cabeca,arq);
+    raiz = criaArvore(-1,0);
+    criaArvoreArquivo(&raiz,arq);
 
 
 

@@ -11,12 +11,12 @@ struct Arvore{
 
 struct Tabela{
     int id,frequencia;
-    char palavra[TF],huffman[TF];
+    char palavra[TF],huffman[9];
     struct Tabela *prox;
 };typedef struct Tabela tabela;
 struct Registro{
     int id;
-    char palavra[TF],huffman[TF];
+    char palavra[TF],huffman[9];
 };typedef struct Registro Registro;
 
 struct ListaOrdenada{
@@ -35,10 +35,7 @@ void criaListaTabela(lista **cabeca, tabela *tab);
 Arvore* removeLista(lista **cabeca);
 
 // consturcao da arvore
-void insereFinal(Arvore **raiz, int id);
-void insereEsq(Arvore **raiz);
-void insereDir(Arvore **raiz);
-void criaArvoreArquivo(lista **cabeca, FILE *arq);
+void criaArvoreArquivo(Arvore **raiz, FILE *arq);
 
 // leitura e busca
 void lerPalavra(FILE *arq, char retorno[TF]);
@@ -88,32 +85,29 @@ void criaListaTabela(lista **cabeca, tabela *tab){
 }
 
 
-void insereFinal(Arvore **raiz,int id);
-{
-
-}
-void insereEsq(Arvore **raiz);
-{
-    
-}
-void insereDir(Arvore **raiz);
-{
-    
-}
 
 //Corrigir
-void criaArvoreArquivo(lista **cabeca, FILE *arq){
+void criaArvoreArquivo(Arvore **raiz, FILE *arq){
     Registro reg;
-    Arvore *raiz,*aux;
+    Arvore *aux;
     int i;
     while(!feof(arq)){
         fread(&reg,sizeof(Registro),1,arq);
-        aux = raiz;
-        for(i=0;i<strlen(reg.huffman);i++){
-            if(reg.huffman[i]==0)
-                insereEsq(&aux);
+        aux = *raiz;
+        for (i = 0; reg.huffman[i] != '\0'; i++) {
+            if(reg.huffman[i]=='0')
+            {
+                if(aux->esq == NULL)
+                    aux->esq = criaArvore(-1,0);
+                aux = aux->esq;
+            }        
             else    
-                insereDir(&aux);
+            {
+                if(aux->dir == NULL)
+                    aux->dir = criaArvore(-1,0);
+                aux = aux->dir;
+            }
+                
         }
         aux->id = reg.id;
     }
