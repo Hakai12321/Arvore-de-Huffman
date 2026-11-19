@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-#include "Lista.c"
+#include "TADLista.c"
 
 int main(){
     FILE *arq = fopen("registro.dat","rb");

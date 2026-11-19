@@ -1,7 +1,9 @@
 #include<stdio.h>
 #include<ctype.h>
 #include<string.h>
+#include<stdlib.h>
 #define TF 100 
+#define TF2 50000 
 
 struct Arvore{
     int id,frequencia;
@@ -11,12 +13,12 @@ struct Arvore{
 
 struct Tabela{
     int id,frequencia;
-    char palavra[TF],huffman[9];
+    char palavra[TF],huffman[TF];
     struct Tabela *prox;
 };typedef struct Tabela tabela;
 struct Registro{
     int id;
-    char palavra[TF],huffman[9];
+    char palavra[TF],huffman[TF];
 };typedef struct Registro Registro;
 
 struct ListaOrdenada{
@@ -39,7 +41,7 @@ void criaArvoreArquivo(Arvore **raiz, FILE *arq);
 
 // leitura e busca
 void lerPalavra(FILE *arq, char retorno[TF]);
-char* buscaPalavra(char palavra[TF], tabela *tab);
+char* getHuffByPalavra(char palavra[TF], tabela *tab);
 
 lista* criaNo(Arvore* arvore){
     lista *nova = (lista*)malloc(sizeof(lista));
@@ -91,7 +93,8 @@ void criaArvoreArquivo(Arvore **raiz, FILE *arq){
     Registro reg;
     Arvore *aux;
     int i;
-    while(!feof(arq)){
+    do
+    {
         fread(&reg,sizeof(Registro),1,arq);
         aux = *raiz;
         for (i = 0; reg.huffman[i] != '\0'; i++) {
@@ -110,7 +113,7 @@ void criaArvoreArquivo(Arvore **raiz, FILE *arq){
                 
         }
         aux->id = reg.id;
-    }
+    }while(!feof(arq));
 }
 
 Arvore* removeLista(lista **cabeca){
@@ -122,30 +125,35 @@ Arvore* removeLista(lista **cabeca){
 }
 
 
-void lerPalavra(FILE *arq,char retorno[TF]) {
-    char palavra[TF];
+char isLetra(int c){
+    return (c >= 'a' && c <= 'z') || c >= 128;//minusculas ou acentuadas
+}
+
+void lerPalavra(FILE *arq, char retorno[TF]){
     int c, i = 0;
 
+    retorno[0] = '\0';
     c = tolower(fgetc(arq));
 
-    while (c != EOF &&  c != 32 && (c < 'a' || c > 'z'))
-        c = fgetc(arq);
-    
-    if(c==32)
-        strcpy(retorno," ");
-    else{
-        while (!feof(arq) && c >= 'a' && c <= 'z') 
-        {
-            palavra[i++] = c;
+    while (c != EOF && c!=32 && !isLetra(c))
+        c = tolower(fgetc(arq));
+
+    if (c != EOF && c==32) {
+        strcpy(retorno, " ");
+    }
+    else {
+        while (c != EOF && isLetra(c)) {
+            retorno[i] = c;
             c = tolower(fgetc(arq));
+            i++;
         }
-        palavra[i] = '\0';
-        if(palavra[0]!='\0')
-            strcpy(retorno,palavra);
+        retorno[i] = '\0';
+        if (c != EOF)       //se nao acabou volta 1 caracter
+            fseek(arq, -1,1);  
     }
 }
 
-char* buscaPalavra(char palavra[TF], tabela *tab){
+char* getHuffByPalavra(char palavra[TF], tabela *tab){
     while (tab != NULL && strcmp(palavra, tab->palavra) != 0)
         tab = tab->prox;
 

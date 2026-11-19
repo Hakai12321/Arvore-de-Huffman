@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-#include "Lista.c"
+#include "TADLista.c"
 
 struct bits{
     unsigned char b7:1;
@@ -14,15 +14,17 @@ struct bits{
     unsigned char b1:1;
     unsigned char b0:1;
 
-};typedef bits bits;
+};typedef struct bits bits;
 union byte{
     bits b;
     unsigned char num;
-};typedef byte byte;
+};typedef union byte byte;
 
 void codigoHuffman(Arvore *raiz,tabela  *cabeca,char *cod);
 tabela* getCabecaById(tabela *tab,int id);
+void lerFrase(char *frase,FILE *txt,tabela *tab);
 void grava(FILE *arq,tabela *tab);
+void setBit(byte *u, int pos, int valor);
 
 
 tabela* criaNoTabela(int id, char palavra[TF]);
@@ -41,6 +43,8 @@ int main(){
     Arvore *arv1,*arv2,*nova,*raiz;
     char cod[TF] = "";
 
+    //CRIA TABELA
+    criaTabela(&tab,"FraseBase.txt");
 
     //CRIA ARVORE
     criaListaTabela(&cabeca,tab);
@@ -53,54 +57,72 @@ int main(){
         insereLista(&cabeca,nova);
     }
     raiz = cabeca->arvore;
+    codigoHuffman(raiz,tab,cod);
 
     //GRAVA TABELA
     FILE *arq = fopen("registro.dat","wb");
     grava(arq,tab);
     fclose(arq);
-
+    
 
     //EXIBE TABELA E ARVORE
-    codigoHuffman(raiz,tab,cod);
-    exibeTabela(tab);
-
+    int nivel = 0;
+    char bit=0;
     
-    //CODIFICA FRASE NOVA
-    arq = fopen("frase.txt","r");
-    FILE *arq2 = fopen("codigo.dat","wb");
-    bits b;
-    char palavra[TF],huff[TF];
-    while(!feof(arq))
-    {
-        palavra[0] = '\0';
-        lerPalavra(arq,palavra);
-        if(palavra[0] != '\0')
-        {
-            strcpy(huff,buscaPalavra(palavra,tab));
-            if(huff == "")
-                printf("palavra nao existe!");
-            else    
-            {
-                //errado
-                b.b0 = huff[0];
-                b.b1 = huff[1];
-                b.b2 = huff[2];
-                b.b3 = huff[3];
-                b.b4 = huff[4];
-                b.b5 = huff[5];
-                b.b6 = huff[6];
-                b.b7 = huff[7];
-            }
+    exibeTabela(tab);
+    exibeArvore(raiz,nivel,bit);
+
+    //LE FRASE PARA CODIFICAR
+    FILE *txt = fopen("\\Arvore-de-Huffman\\outputFraseParaCodificar.txt","r");
+    if(txt == NULL)
+        printf("erro2");
+    char frase[TF2];
+    lerFrase(frase,txt,tab);
+    fclose(txt);
+
+
+    //CODIFICA FRASE
+    int total, pos = 0, k,preenche;
+    byte u;
+    total = strlen(frase);
+    arq = fopen("codigo.dat","wb");
+    if(!strcmp(getHuffByPalavra(" ",tab),"1"))
+        preenche = 255;
+    else    
+        preenche = 0;
+    u.num =preenche;//inicialmente preenchido com 1s
+    for (k = 0; k < total; k++) {
+        setBit(&u, pos, frase[k] == '1');
+        pos++;
+        if (pos == 8) {
+            fwrite(&u.num, 1, 1, arq);
+            u.num = preenche;
+            pos = 0;
         }
     }
+    if (pos > 0)
+        fwrite(&u.num, 1, 1, arq);
+    fclose(arq);
+    return 0;
 
+}
+
+void lerFrase(char *frase,FILE *txt,tabela *tab){
+    char palavra[TF];
+    frase[0] = '\0';
+    while (!feof(txt)) 
+    {
+        palavra[0] = '\0';
+        lerPalavra(txt, palavra);
+            if (palavra[0] != '\0')
+                strcat(frase, getHuffByPalavra(palavra, tab));
+    }
 }
 
 void codigoHuffman(Arvore *raiz,tabela *tab,char *cod){
     if(raiz!= NULL){
         if(raiz->id<0)
         {
-            //arrumar
             codigoHuffman(raiz->esq,tab,strcat(cod,"0"));
             cod[strlen(cod)-1] = '\0';
 
@@ -249,5 +271,26 @@ void exibeArvore(Arvore *raiz,int nivel,char bit)
             printf("[%d]:%d\n",raiz->id,raiz->frequencia);
 
         exibeArvore(raiz->esq,nivel+1,'0');
+    }
+}
+
+void setBit(byte *u, int pos, int valor){
+    switch(pos){
+        case 0: u->b.b7 = valor; 
+            break;
+        case 1: u->b.b6 = valor; 
+            break;
+        case 2: u->b.b5 = valor;
+             break;
+        case 3: u->b.b4 = valor; 
+            break;
+        case 4: u->b.b3 = valor;
+             break;
+        case 5: u->b.b2 = valor; 
+            break;
+        case 6: u->b.b1 = valor;
+             break;
+        case 7: u->b.b0 = valor; 
+            break;
     }
 }
