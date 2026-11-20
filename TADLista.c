@@ -26,6 +26,22 @@ struct ListaOrdenada{
     struct ListaOrdenada *prox;
 };typedef struct ListaOrdenada lista;
 
+struct bits{
+    unsigned char b7:1;
+    unsigned char b6:1;
+    unsigned char b5:1;
+    unsigned char b4:1;
+    unsigned char b3:1;
+    unsigned char b2:1;
+    unsigned char b1:1;
+    unsigned char b0:1;
+
+};typedef struct bits bits;
+union byte{
+    bits b;
+    unsigned char num;
+};typedef union byte byte;
+
 
 // criacao de nos
 lista* criaNo(Arvore *arvore);
@@ -93,7 +109,7 @@ void criaArvoreArquivo(Arvore **raiz, FILE *arq){
     Registro reg;
     Arvore *aux;
     int i;
-    do
+    while(!feof(arq))
     {
         fread(&reg,sizeof(Registro),1,arq);
         aux = *raiz;
@@ -113,7 +129,7 @@ void criaArvoreArquivo(Arvore **raiz, FILE *arq){
                 
         }
         aux->id = reg.id;
-    }while(!feof(arq));
+    }
 }
 
 Arvore* removeLista(lista **cabeca){
@@ -126,7 +142,7 @@ Arvore* removeLista(lista **cabeca){
 
 
 char isLetra(int c){
-    return (c >= 'a' && c <= 'z') || c >= 128;//minusculas ou acentuadas
+    return (c >= 'a' && c <= 'z'); 
 }
 
 void lerPalavra(FILE *arq, char retorno[TF]){
@@ -135,22 +151,15 @@ void lerPalavra(FILE *arq, char retorno[TF]){
     retorno[0] = '\0';
     c = tolower(fgetc(arq));
 
-    while (c != EOF && c!=32 && !isLetra(c))
+    while (!feof(arq) && !isLetra(c))
         c = tolower(fgetc(arq));
 
-    if (c != EOF && c==32) {
-        strcpy(retorno, " ");
-    }
-    else {
-        while (c != EOF && isLetra(c)) {
+    while (!feof(arq) && isLetra(c)) {
             retorno[i] = c;
             c = tolower(fgetc(arq));
             i++;
         }
         retorno[i] = '\0';
-        if (c != EOF)       //se nao acabou volta 1 caracter
-            fseek(arq, -1,1);  
-    }
 }
 
 char* getHuffByPalavra(char palavra[TF], tabela *tab){

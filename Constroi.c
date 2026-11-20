@@ -4,25 +4,11 @@
 #include <stdlib.h>
 #include "TADLista.c"
 
-struct bits{
-    unsigned char b7:1;
-    unsigned char b6:1;
-    unsigned char b5:1;
-    unsigned char b4:1;
-    unsigned char b3:1;
-    unsigned char b2:1;
-    unsigned char b1:1;
-    unsigned char b0:1;
 
-};typedef struct bits bits;
-union byte{
-    bits b;
-    unsigned char num;
-};typedef union byte byte;
 
 void codigoHuffman(Arvore *raiz,tabela  *cabeca,char *cod);
 tabela* getCabecaById(tabela *tab,int id);
-void lerFrase(char *frase,FILE *txt,tabela *tab);
+void codificaFrase(char *frase,FILE *txt,tabela *tab);
 void grava(FILE *arq,tabela *tab);
 void setBit(byte *u, int pos, int valor);
 
@@ -60,7 +46,7 @@ int main(){
     codigoHuffman(raiz,tab,cod);
 
     //GRAVA TABELA
-    FILE *arq = fopen("registro.dat","wb");
+    FILE *arq = fopen("tabela.dat","wb");
     grava(arq,tab);
     fclose(arq);
     
@@ -73,11 +59,11 @@ int main(){
     exibeArvore(raiz,nivel,bit);
 
     //LE FRASE PARA CODIFICAR
-    FILE *txt = fopen("\\Arvore-de-Huffman\\outputFraseParaCodificar.txt","r");
+    FILE *txt = fopen("FraseParaCodificar.txt","r");
     if(txt == NULL)
-        printf("erro2");
+        printf("Arquivo nao existe!");
     char frase[TF2];
-    lerFrase(frase,txt,tab);
+    codificaFrase(frase,txt,tab);
     fclose(txt);
 
 
@@ -90,9 +76,12 @@ int main(){
         preenche = 255;
     else    
         preenche = 0;
-    u.num =preenche;//inicialmente preenchido com 1s
+    u.num =preenche;//inicialmente preenchido com 1s ou 0s dependendo do espaco
     for (k = 0; k < total; k++) {
-        setBit(&u, pos, frase[k] == '1');
+        if(frase[k] == '1')
+            setBit(&u, pos, 1);
+        if(frase[k] == '0')
+            setBit(&u, pos, 0);
         pos++;
         if (pos == 8) {
             fwrite(&u.num, 1, 1, arq);
@@ -107,7 +96,7 @@ int main(){
 
 }
 
-void lerFrase(char *frase,FILE *txt,tabela *tab){
+void codificaFrase(char *frase,FILE *txt,tabela *tab){
     char palavra[TF];
     frase[0] = '\0';
     while (!feof(txt)) 
@@ -115,7 +104,10 @@ void lerFrase(char *frase,FILE *txt,tabela *tab){
         palavra[0] = '\0';
         lerPalavra(txt, palavra);
             if (palavra[0] != '\0')
+            {
                 strcat(frase, getHuffByPalavra(palavra, tab));
+                strcat(frase, getHuffByPalavra(" ", tab));
+            }               
     }
 }
 
@@ -197,7 +189,11 @@ void criaTabela(tabela **tab, char nomeArquivo[TF]){
             palavra[0] = '\0';
             lerPalavra(arq,palavra);
             if(palavra[0] != '\0')
+            {
                 insereTabela(&(*tab),palavra);
+                insereTabela(&(*tab)," ");
+            }
+                
         }
         fclose(arq);
     }
