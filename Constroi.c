@@ -84,13 +84,13 @@ int main(){
             setBit(&u, pos, 0);
         pos++;
         if (pos == 8) {
-            fwrite(&u.num, 1, 1, arq);
+            fwrite(&u.b, sizeof(u.b), 1, arq);
             u.num = preenche;
             pos = 0;
         }
     }
     if (pos > 0)
-        fwrite(&u.num, 1, 1, arq);
+        fwrite(&u.b, sizeof(u.b), 1, arq);
     fclose(arq);
     return 0;
 
@@ -272,21 +272,21 @@ void exibeArvore(Arvore *raiz,int nivel,char bit)
 
 void setBit(byte *u, int pos, int valor){
     switch(pos){
-        case 0: u->b.b7 = valor; 
+        case 0: u->b.b0 = valor; 
             break;
-        case 1: u->b.b6 = valor; 
+        case 1: u->b.b1 = valor; 
             break;
-        case 2: u->b.b5 = valor;
+        case 2: u->b.b2 = valor;
              break;
-        case 3: u->b.b4 = valor; 
+        case 3: u->b.b3 = valor; 
             break;
-        case 4: u->b.b3 = valor;
+        case 4: u->b.b4 = valor;
              break;
-        case 5: u->b.b2 = valor; 
+        case 5: u->b.b5 = valor; 
             break;
-        case 6: u->b.b1 = valor;
+        case 6: u->b.b6 = valor;
              break;
-        case 7: u->b.b0 = valor; 
+        case 7: u->b.b7 = valor; 
             break;
     }
 }
